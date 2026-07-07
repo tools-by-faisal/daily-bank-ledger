@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#3B82F6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
+  
+  <title>Daily Bank Ledger & Reconciliation</title>
+  
+  <!-- Modern Geometric Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-mode"> <!-- Defaults to dark mode for premium look -->
+
+  <!-- Top Sticky Navigation / App Bar -->
+  <header class="app-bar">
+    <div class="app-bar-brand">
+      <div class="logo-container">
+        <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Exchange Ledger</h1>
+        <span class="sub-text">Daily Reconciliation</span>
+      </div>
+    </div>
+    
+    <div class="app-bar-actions">
+      <!-- Date Picker Trigger -->
+      <div class="date-selector">
+        <input type="date" id="global-date" name="global-date">
+      </div>
+      
+      <!-- Theme Switcher -->
+      <button id="theme-toggle" class="icon-btn" aria-label="Toggle Dark Mode">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Scrollable App Container -->
+  <main class="app-container">
+    
+    <!-- View 1: Main Dashboard -->
+    <section id="view-dashboard" class="app-view active">
+      <!-- High-Level Overview Cards -->
+      <div class="metrics-grid">
+        <div class="metric-card card-opening">
+          <div class="metric-info">
+            <span class="metric-label">Opening Balance</span>
+            <h2 id="total-opening" class="metric-value">0.00</h2>
+          </div>
+<div class="metric-icon metric-currency">
+    PKR
+</div>
+        </div>
+        <div class="metric-card card-credit">
+          <div class="metric-info">
+            <span class="metric-label">Total Credit</span>
+            <h2 id="total-credit" class="metric-value">0.00</h2>
+          </div>
+          <div class="metric-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+          </div>
+        </div>
+        <div class="metric-card card-debit">
+          <div class="metric-info">
+            <span class="metric-label">Total Debit</span>
+            <h2 id="total-debit" class="metric-value">0.00</h2>
+          </div>
+          <div class="metric-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg>
+          </div>
+        </div>
+        <div class="metric-card card-closing">
+          <div class="metric-info">
+            <span class="metric-label">Closing Balance</span>
+            <h2 id="total-closing" class="metric-value">0.00</h2>
+          </div>
+          <div class="metric-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions Bar -->
+      <div class="action-bar">
+        <button id="btn-quick-opening" class="btn btn-secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"></path></svg>
+          Morning Opening Balances
+        </button>
+        <button id="btn-undo-last" class="btn btn-warning btn-icon-only" title="Undo Last Transaction" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+        </button>
+      </div>
+
+      <!-- Bank Accounts Summary Grid/List -->
+      <div class="section-container">
+        <div class="section-header">
+          <h2>Bank Accounts Summary</h2>
+          <span id="tx-counter-badge" class="badge">0 Transactions</span>
+        </div>
+        <div class="dashboard-list" id="dashboard-accounts-list">
+          <!-- Dynamic row items will be injected here -->
+        </div>
+      </div>
+    </section>
+    
+    <!-- View 2: Bank Ledger & Dashboard -->
+    <section id="view-bank-detail" class="app-view">
+      <div class="back-nav">
+        <a href="#dashboard" class="back-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Back to Dashboard
+        </a>
+      </div>
+
+      <!-- Bank Selector Dropdown -->
+      <div class="bank-switcher-container">
+        <div class="form-group bank-select-group">
+          <select id="bank-ledger-select">
+            <option value="Sami UBL">Sami UBL</option>
+            <option value="Sami Faysal">Sami Faysal</option>
+            <option value="Us UBL">Us UBL</option>
+            <option value="Us Faysal">Us Faysal</option>
+            <option value="My UBL">My UBL</option>
+            <option value="My Faysal">My Faysal</option>
+            <option value="JazzCash">JazzCash</option>
+            <option value="Easypaisa">Easypaisa</option>
+            <option value="SadaPay">SadaPay</option>
+            <option value="NayaPay">NayaPay</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Individual Account Dashboard -->
+      <div class="bank-profile-card">
+        <div class="bank-profile-main">
+          <h2 id="bank-detail-name">Bank Name</h2>
+          <span class="date-badge" id="bank-detail-date">2026-07-06</span>
+        </div>
+        
+        <div class="bank-profile-stats">
+          <div class="stat-box">
+            <span class="stat-label">Opening</span>
+            <span class="stat-value text-blue" id="bank-detail-opening">0.00</span>
+            <button id="btn-edit-single-opening" class="btn-text" title="Edit Opening Balance">Edit</button>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Credit (+)</span>
+            <span class="stat-value text-green" id="bank-detail-credit">0.00</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Debit (-)</span>
+            <span class="stat-value text-red" id="bank-detail-debit">0.00</span>
+          </div>
+          <div class="stat-box closing-box">
+            <span class="stat-label">Closing</span>
+            <span class="stat-value" id="bank-detail-closing">0.00</span>
+          </div>
+        </div>
+
+        <div class="bank-profile-meta">
+          <div>Transactions: <strong id="bank-detail-tx-count">0</strong></div>
+          <div>Last transaction: <strong id="bank-detail-last-time">--:--</strong></div>
+        </div>
+
+        <div class="bank-profile-actions">
+          <button id="btn-manual-adjust" class="btn btn-sm btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            Balance Adjustment
+          </button>
+          <button id="btn-add-tx-from-bank" class="btn btn-sm btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Add Transaction
+          </button>
+        </div>
+      </div>
+
+      <!-- Ledger Search and Ledger Table -->
+      <div class="section-container">
+        <div class="ledger-toolbar">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="ledger-search" placeholder="Search Client/Remarks...">
+          </div>
+          <div class="ledger-filter-chips">
+            <button class="chip active" data-type="all">All</button>
+            <button class="chip text-green" data-type="credit">Credit</button>
+            <button class="chip text-red" data-type="debit">Debit</button>
+          </div>
+        </div>
+
+        <!-- Ledger Table List (Optimized for Mobile viewports) -->
+        <div class="ledger-list-container">
+          <div class="ledger-header-row">
+            <div>Time/Client</div>
+            <div>Credit/Debit</div>
+            <div>Running Balance</div>
+          </div>
+          <div id="ledger-entries-list" class="ledger-entries">
+            <!-- Dynamic transactions go here -->
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- View 3: Add / Edit Transaction Form -->
+    <section id="view-transaction-form" class="app-view">
+      <div class="back-nav">
+        <a id="btn-cancel-tx" href="#dashboard" class="back-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Cancel
+        </a>
+      </div>
+
+      <div class="form-card">
+        <h2 id="form-title">Add Transaction</h2>
+        
+        <!-- Duplicate Warning Notification -->
+        <div id="duplicate-warning" class="alert-box alert-warning hidden">
+          <div class="alert-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          </div>
+          <div class="alert-content">
+            <h4>Duplicate Warning</h4>
+            <p>A transaction with the same amount and client was recorded in this bank account recently.</p>
+          </div>
+        </div>
+
+        <form id="tx-form" autocomplete="off">
+          <input type="hidden" id="tx-id">
+          
+          <div class="form-row split">
+            <div class="form-group">
+              <label for="tx-date">Date</label>
+              <input type="date" id="tx-date" required>
+            </div>
+            <div class="form-group">
+              <label for="tx-time">Time</label>
+              <input type="time" id="tx-time" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="tx-bank">Bank Account</label>
+            <select id="tx-bank" required>
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Transaction Type</label>
+            <div class="type-toggle-group">
+              <input type="radio" id="type-credit" name="tx-type" value="credit" checked>
+              <label for="type-credit" class="type-label label-credit">CREDIT (Money In)</label>
+              
+              <input type="radio" id="type-debit" name="tx-type" value="debit">
+              <label for="type-debit" class="type-label label-debit">DEBIT (Money Out)</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="tx-amount">Amount</label>
+            <div class="input-prefix-wrapper">
+              <input type="number" id="tx-amount" placeholder="0.00" step="any" min="0.01" required>
+            </div>
+          </div>
+
+          <div class="form-group autocomplete-container">
+            <label for="tx-client">Client Name</label>
+            <input type="text" id="tx-client" placeholder="Type or select client name" required>
+            <div id="client-autocomplete-list" class="autocomplete-list"></div>
+            
+            <!-- Quick Suggestions Chips -->
+            <div class="frequent-clients-wrapper">
+              <span class="small-label">Recent:</span>
+              <div id="frequent-clients-chips" class="chips-container">
+                <!-- Client suggestion chips injected here -->
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="tx-remarks">Remarks / Notes</label>
+            <textarea id="tx-remarks" rows="2" placeholder="Optional details..."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block" id="btn-save-tx">Save Transaction</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- View 4: Reports -->
+    <section id="view-reports" class="app-view">
+      <div class="view-header">
+        <h2>Financial Reports</h2>
+      </div>
+
+      <!-- Report Tab Triggers -->
+      <div class="tab-header">
+        <button class="tab-link active" data-tab="tab-daily">Daily</button>
+        <button class="tab-link" data-tab="tab-bank">Bank-wise</button>
+        <button class="tab-link" data-tab="tab-client">Client-wise</button>
+      </div>
+
+      <!-- Tab Content: Daily Summary Report -->
+      <div id="tab-daily" class="tab-content active">
+        <div class="report-controls">
+          <div class="form-group">
+            <label for="report-daily-date">Select Date</label>
+            <input type="date" id="report-daily-date">
+          </div>
+          <button id="btn-export-daily" class="btn btn-secondary btn-sm">
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Export CSV
+          </button>
+        </div>
+
+        <div class="report-table-wrapper">
+          <table class="report-table" id="report-daily-table">
+            <thead>
+              <tr>
+                <th>Bank</th>
+                <th class="text-right">Opening</th>
+                <th class="text-right">Credit</th>
+                <th class="text-right">Debit</th>
+                <th class="text-right">Closing</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Daily Report rows -->
+            </tbody>
+            <tfoot>
+              <!-- Totals row -->
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab Content: Bank-wise Ledger Report -->
+      <div id="tab-bank" class="tab-content">
+        <div class="report-controls select-grid">
+          <div class="form-group">
+            <label for="report-bank-select">Select Bank</label>
+            <select id="report-bank-select"></select>
+          </div>
+          <div class="form-row split">
+            <div class="form-group">
+              <label for="report-bank-start">Start Date</label>
+              <input type="date" id="report-bank-start">
+            </div>
+            <div class="form-group">
+              <label for="report-bank-end">End Date</label>
+              <input type="date" id="report-bank-end">
+            </div>
+          </div>
+          <div class="btn-group-align">
+            <button id="btn-export-bank-wise" class="btn btn-secondary btn-sm btn-block">
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Export CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Bank-wise statistics card -->
+        <div class="stats-panel-mini" id="report-bank-stats">
+          <!-- Dynamic card components -->
+        </div>
+
+        <div class="report-table-wrapper">
+          <table class="report-table" id="report-bank-table">
+            <thead>
+              <tr>
+                <th>Date/Time</th>
+                <th>Client Name</th>
+                <th class="text-right">Credit</th>
+                <th class="text-right">Debit</th>
+                <th class="text-right">Running</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Bank Report rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab Content: Client-wise Report -->
+      <div id="tab-client" class="tab-content">
+        <div class="report-controls select-grid">
+          <div class="form-group autocomplete-container">
+            <label for="report-client-input">Client Name</label>
+            <input type="text" id="report-client-input" placeholder="Type to search client...">
+            <div id="report-client-autocomplete" class="autocomplete-list"></div>
+          </div>
+          <div class="btn-group-align">
+            <button id="btn-export-client-wise" class="btn btn-secondary btn-sm btn-block">
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Export CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Client metrics -->
+        <div class="stats-panel-mini" id="report-client-stats">
+          <!-- Dynamic card components -->
+        </div>
+
+        <div class="report-table-wrapper">
+          <table class="report-table" id="report-client-table">
+            <thead>
+              <tr>
+                <th>Date/Time</th>
+                <th>Bank Account</th>
+                <th class="text-right">Credit (+)</th>
+                <th class="text-right">Debit (-)</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Client Report rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- View 5: Search & Filter Panel -->
+    <section id="view-search" class="app-view">
+      <div class="view-header">
+        <h2>Global Search & Filter</h2>
+      </div>
+
+      <div class="filter-panel-card">
+        <div class="form-row split">
+          <div class="form-group">
+            <label for="filter-bank">Bank Account</label>
+            <select id="filter-bank">
+              <option value="">All Accounts</option>
+              <!-- Options loaded dynamically -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="filter-type">Type</label>
+            <select id="filter-type">
+              <option value="">All Types</option>
+              <option value="credit">Credit Only</option>
+              <option value="debit">Debit Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row split">
+          <div class="form-group">
+            <label for="filter-start-date">From Date</label>
+            <input type="date" id="filter-start-date">
+          </div>
+          <div class="form-group">
+            <label for="filter-end-date">To Date</label>
+            <input type="date" id="filter-end-date">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="filter-client">Client Name</label>
+          <input type="text" id="filter-client" placeholder="Search client name...">
+        </div>
+
+        <div class="filter-actions-row">
+          <button id="btn-clear-filters" class="btn btn-secondary">Clear Filters</button>
+          <button id="btn-apply-filters" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Filter
+          </button>
+        </div>
+      </div>
+
+      <div class="section-container">
+        <div class="section-header">
+          <h3>Search Results</h3>
+          <span id="search-results-badge" class="badge">0 found</span>
+        </div>
+        
+        <div class="ledger-list-container">
+          <div class="ledger-header-row search-layout">
+            <div>Date/Bank/Client</div>
+            <div>Amount</div>
+            <div>Action</div>
+          </div>
+          <div id="search-results-list" class="ledger-entries">
+            <!-- Dynamic entries -->
+          </div>
+        </div>
+      </div>
+    </section>
+<section id="view-notes" class="app-view">
+
+  <div class="view-header">
+    <h2>Notes</h2>
+    <p id="notes-current-date" class="section-subtitle">
+      Today's Notes
+    </p>
+  </div>
+
+  <div class="section-container">
+
+    <div class="form-group">
+
+      <textarea
+        id="daily-notes"
+        rows="16"
+        placeholder="Write your daily notes, reminders, follow-ups or important information here..."
+       ></textarea>
+
+    </div>
+
+  </div>
+
+</section>
+
+    <!-- View 6: Settings, Backup & Integration -->
+    <section id="view-settings" class="app-view">
+      <div class="view-header">
+        <h2>App Tools & Settings</h2>
+      </div>
+
+      <!-- Notes for current selected Date -->
+      <div class="settings-card">
+        <h3>Daily Ledger Notes</h3>
+        <p class="description-text">Remarks or notes for the selected active date (<strong id="notes-current-date">2026-07-06</strong>):</p>
+        <div class="form-group">
+          <textarea id="settings-day-notes" rows="3" placeholder="Enter instructions, exchange rates list, or daily summaries here..."></textarea>
+        </div>
+        <button id="btn-save-day-notes" class="btn btn-secondary btn-sm">Save Notes</button>
+      </div>
+
+      <!-- Backup & Restore -->
+      <div class="settings-card">
+        <h3>Backup & Data Recovery</h3>
+        <p class="description-text">Export all accounts, transactions, and settings into a single backup file or restore from a previous one.</p>
+        <div class="action-grid">
+          <button id="btn-backup-export" class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            Export Backup (JSON)
+          </button>
+          
+          <div class="file-upload-wrapper">
+            <button class="btn btn-secondary btn-block">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Import Backup (JSON)
+            </button>
+            <input type="file" id="btn-backup-import" accept=".json">
+          </div>
+        </div>
+      </div>
+
+      <!-- Currency Exchange Calculator Integration -->
+      <div class="settings-card">
+        <h3>Calculator Integration</h3>
+        <p class="description-text">Allow your Currency Exchange Calculator app to post deal records directly to this ledger without manual typing.</p>
+        
+        <div class="code-example-box">
+          <code>window.postMessage({
+  source: 'currency-exchange-calc',
+  action: 'ADD_TRANSACTION',
+  transaction: {
+    account: "Sami UBL", // Exactly matches bank list
+    type: "credit",      // "credit" or "debit"
+    amount: 150000,
+    client: "Ahmed Khan",
+    remarks: "Auto sync"
+  }
+}, "*");</code>
+        </div>
+        
+        <div class="test-integration-panel">
+          <button id="btn-trigger-test-msg" class="btn btn-sm btn-secondary">
+            Send Test Deal Transaction (Sami UBL)
+          </button>
+        </div>
+      </div>
+
+      <!-- Factory Reset -->
+      <div class="settings-card danger-zone">
+        <h3>Danger Zone</h3>
+        <p class="description-text">Irreversibly delete all ledger files, transaction history, and custom configs. This actions cannot be undone.</p>
+        <button id="btn-factory-reset" class="btn btn-danger">Wipe All App Data</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Sticky Bottom Navigation Bar for Mobile-First Flow -->
+  <nav class="bottom-nav">
+    <a href="#dashboard" class="nav-item" id="nav-dashboard">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="9"></rect>
+        <rect x="14" y="3" width="7" height="5"></rect>
+        <rect x="14" y="12" width="7" height="9"></rect>
+        <rect x="3" y="16" width="7" height="5"></rect>
+      </svg>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    
+    <!-- This goes to the last active bank detail or defaults to the first bank ledger -->
+    <a href="#bank-detail" class="nav-item" id="nav-ledger">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      <span class="nav-label">Ledger</span>
+    </a>
+
+    <!-- Floating Action Button for Adding Transactions -->
+    <div class="fab-container">
+      <a href="#transaction-form" class="fab-btn" aria-label="Add Transaction">
+        <svg class="fab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </a>
+    </div>
+
+    <a href="#reports" class="nav-item" id="nav-reports">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10"></line>
+        <line x1="12" y1="20" x2="12" y2="4"></line>
+        <line x1="6" y1="20" x2="6" y2="14"></line>
+      </svg>
+      <span class="nav-label">Reports</span>
+    </a>
+<a href="#notes" id="nav-notes" class="nav-item">
+  <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+    <polyline points="14 2 14 8 20 8"></polyline>
+    <line x1="8" y1="13" x2="16" y2="13"></line>
+    <line x1="8" y1="17" x2="13" y2="17"></line>
+  </svg>
+
+  <span class="nav-label">Notes</span>
+</a>
+    
+    <a href="#settings" class="nav-item" id="nav-settings">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+      <span class="nav-label">Settings</span>
+    </a>
+  </nav>
+
+  <!-- ==================================================== -->
+  <!-- Dialog Modals (Hidden by default)                    -->
+  <!-- ==================================================== -->
+  
+  <!-- Modal 1: Morning Opening Balances Form -->
+  <div id="modal-opening-balances" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Morning Opening Balances</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="dialog-note">Input the opening balances for <span class="text-blue" id="opening-date-label">Today</span>. Locked for the day after save.</p>
+        <form id="form-morning-opening">
+          <div class="opening-fields-grid" id="opening-fields-container">
+            <!-- Dynamic input fields for 10 banks generated here -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save All Balances</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Edit Single Opening Balance -->
+  <div id="modal-edit-single-opening" class="modal-overlay">
+    <div class="modal-card mini-card">
+      <div class="modal-header">
+        <h3>Edit Opening Balance</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="dialog-note"><strong id="single-opening-bank-name">Bank Name</strong></p>
+        <form id="form-edit-single-opening">
+          <input type="hidden" id="single-opening-bank-id">
+          <div class="form-group">
+            <label for="single-opening-amount">Opening Balance</label>
+            <input type="number" id="single-opening-amount" placeholder="0.00" step="any" required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Change</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Manual Balance Adjustment (Credit/Debit with reason) -->
+  <div id="modal-balance-adjust" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Balance Adjustment Entry</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="dialog-note">Manually adjust balance of <strong id="adjust-bank-name">Bank Name</strong>. This creates an auditable adjustment record.</p>
+        <form id="form-balance-adjust" autocomplete="off">
+          <input type="hidden" id="adjust-bank-id">
+          
+          <div class="form-group">
+            <label>Adjustment Type</label>
+            <div class="type-toggle-group">
+              <input type="radio" id="adjust-type-credit" name="adjust-type" value="credit" checked>
+              <label for="adjust-type-credit" class="type-label label-credit">ADD Balance (+)</label>
+              
+              <input type="radio" id="adjust-type-debit" name="adjust-type" value="debit">
+              <label for="adjust-type-debit" class="type-label label-debit">SUBTRACT Balance (-)</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="adjust-amount">Adjustment Amount</label>
+            <input type="number" id="adjust-amount" placeholder="0.00" step="any" min="0.01" required>
+          </div>
+
+          <div class="form-group">
+            <label for="adjust-reason">Reason for Adjustment</label>
+            <select id="adjust-reason" required>
+              <option value="">Select a reason...</option>
+              <option value="Cash Count Reconciliation">Cash Count Reconciliation</option>
+              <option value="Bank Statement Correction">Bank Statement Correction</option>
+              <option value="Opening Balance Discrepancy">Opening Balance Discrepancy</option>
+              <option value="Double Posted Correction">Double Posted Correction</option>
+              <option value="Other / Misc Adjustment">Other / Misc Adjustment</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="adjust-remarks">Adjustment Remarks</label>
+            <textarea id="adjust-remarks" rows="2" placeholder="Describe the reason/mistake in detail..." required></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Apply Adjustment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Delete Transaction Confirmation -->
+  <div id="modal-delete-confirm" class="modal-overlay">
+    <div class="modal-card mini-card">
+      <div class="modal-header">
+        <h3 class="text-red">Delete Transaction?</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this transaction? This action is permanent and will instantly recalculate all ledger totals.</p>
+        <div class="delete-summary-box" id="delete-tx-details">
+          <!-- Details injected -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+          <button type="button" id="btn-confirm-delete" class="btn btn-danger">Confirm Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Toast Notification Banner -->
+  <div id="toast" class="toast-banner hidden">
+    <span id="toast-message">Message goes here</span>
+  </div>
+
+  <!-- Registration script for Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then((reg) => console.log('Service Worker Registered Successfully', reg.scope))
+          .catch((err) => console.error('Service Worker Registration Failed', err));
+      });
+    }
+  </script>
+  
+  <!-- Core Logic Script -->
+  <script src="app.js"></script>
+</body>
+</html>
